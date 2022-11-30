@@ -85,7 +85,7 @@ class User extends API {
 }
 
 let user = new User();
-//eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzODdjNzgzMjA3NTk0MWIwMGU0NmRkMiIsInVzZXJuYW1lIjoic2RmYXNmZHNhZmQiLCJleHAiOjE2NzUwMjY4MTksImlhdCI6MTY2OTg0MjgxOX0.pmNrFI2VhAZdlVD5pKLC5CqZucYaGigpUmWC_HqmCA8
+
 let register_form = document.querySelector('#register');
 let register_button = register_form.querySelector('button');
 let register_login = register_form.querySelector('[placeholder=Логин]');
