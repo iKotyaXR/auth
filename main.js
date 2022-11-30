@@ -1,5 +1,3 @@
-console.clear();
-
 class API {
   api_link = 'https://blog.kata.academy/api/';
 
@@ -11,14 +9,15 @@ class API {
     this.method = data;
   }
 
-  async send_request(path, body) {
+  async send_request(path, body, headers = {}) {
     return new Promise(async (reslove, reject) => {
       try {
+        let headers_data = Object.assign(headers, {
+          'Content-Type': 'application/json;charset=utf-8',
+        });
         let data = await fetch(this.api_link + path, {
-          headers: {
-            'Content-Type': 'application/json;charset=utf-8',
-          },
-          body: JSON.stringify(body),
+          headers: headers_data,
+          body: body ? JSON.stringify(body) : null,
           method: this.method,
         });
         let json_data = await data.json();
@@ -33,6 +32,7 @@ class API {
 class User extends API {
   constructor() {
     super();
+    this.token = null;
   }
 
   register(username, email, password) {
@@ -47,7 +47,6 @@ class User extends API {
       }).catch((err) => {
         reject(err);
       });
-
       resolve(request_data);
     });
   }
@@ -67,10 +66,26 @@ class User extends API {
       resolve(request_data);
     });
   }
+
+  get_data() {
+    return new Promise(async (resolve, reject) => {
+      this.set_method('GET');
+      let request_data = await this.send_request('/user', null, {
+        Authorization: 'Token ' + this.token,
+      }).catch((err) => {
+        reject(err);
+      });
+
+      resolve(request_data);
+    });
+  }
+  set_token(value) {
+    this.token = value;
+  }
 }
 
 let user = new User();
-
+//eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzODdjNzgzMjA3NTk0MWIwMGU0NmRkMiIsInVzZXJuYW1lIjoic2RmYXNmZHNhZmQiLCJleHAiOjE2NzUwMjY4MTksImlhdCI6MTY2OTg0MjgxOX0.pmNrFI2VhAZdlVD5pKLC5CqZucYaGigpUmWC_HqmCA8
 let register_form = document.querySelector('#register');
 let register_button = register_form.querySelector('button');
 let register_login = register_form.querySelector('[placeholder=Логин]');
@@ -82,21 +97,21 @@ register_button.addEventListener('click', () => {
     .register(register_login.value, register_email.value, register_password.value)
     .then((res) => {
       let text = '';
-      register_result.style.color = ""
+      register_result.style.color = '';
       for (key in res.user) {
-        text += `${key}: ${res.user[key]}\n`
+        text += `${key}: ${res.user[key]}\n`;
       }
       register_result.textContent = text;
+      user.set_token(res.user.token);
     })
     .catch((err) => {
       let text = '';
-      register_result.style.color = "red"
+      register_result.style.color = 'red';
       for (key in err.errors) {
-        text += `${key}: ${err.errors[key]}\n`
+        text += `${key}: ${err.errors[key]}\n`;
       }
       register_result.textContent = text;
     });
-  console.log(register_email.value);
 });
 
 let login_form = document.querySelector('#login');
@@ -110,38 +125,44 @@ login_button.addEventListener('click', () => {
     .login(login_email.value, login_password.value)
     .then((res) => {
       let text = '';
-      login_result.style.color = ""
+      login_result.style.color = '';
       for (key in res.user) {
-        text += `${key}: ${res.user[key]}\n`
+        text += `${key}: ${res.user[key]}\n`;
       }
       login_result.textContent = text;
+      user.set_token(res.user.token);
     })
     .catch((err) => {
       let text = '';
-      login_result.style.color = "red"
+      login_result.style.color = 'red';
       for (key in err.errors) {
-        text += `${key}: ${err.errors[key]}\n`
+        text += `${key}: ${err.errors[key]}\n`;
       }
       login_result.textContent = text;
     });
-  console.log(login_email.value);
 });
-// console.log(register_email)
-// let email = 'ece@bk.ru';
-// let login = 'ece';
-// let pass = '123123';
-// user
-//   .register(login, email, pass)
-//   .then((res) => {})
-//   .catch((err) => {
-//     console.error(err);
-//   });
 
-// user
-//   .login(email, pass)
-//   .then((res) => {
-//     console.log(res);
-//   })
-//   .catch((err) => {
-//     console.error(err);
-//   });
+let getdata_form = document.querySelector('.getdata');
+let getdata_button = getdata_form.querySelector('button');
+let getdata_result = getdata_form.querySelector('p');
+
+getdata_button.addEventListener('click', () => {
+  user
+    .get_data()
+    .then((res) => {
+      let text = '';
+      getdata_result.style.color = '';
+      for (key in res.user) {
+        text += `${key}: ${res.user[key]}\n`;
+      }
+      getdata_result.textContent = text;
+    })
+    .catch((err) => {
+      let text = '';
+      getdata_result.style.color = 'red';
+      for (key in err.errors.error) {
+        text += `${key}: ${err.errors.error[key]}\n`;
+      }
+      getdata_result.textContent = text;
+    });
+});

@@ -6,6 +6,7 @@ main {
   display: flex;
   justify-content: space-around;
   margin-top: 50px;
+  flex-wrap: wrap;
 }
 .form {
   background-color: #455dee;
@@ -13,6 +14,7 @@ main {
   width: 350px;
   height: 500px;
   position: relative;
+  margin:10px;
 }
 input {
   display: block;
@@ -44,4 +46,13 @@ button {
   border: none;
   height: 40px;
   background-color: #48ef82;
+  margin-top: 10px;
+}
+
+.getdata {
+  background-color: blueviolet;
+  width: 350px;
+  height: 300px;
+  position: relative;
+  color:white
 }
